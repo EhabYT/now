@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EB Bot — Dashboard</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="style.css?v=1778197084">
+  <script src="icons.js?v=1778197084"></script>
+  <script src="translations.js?v=1778197084" defer></script>
+  <script>function renderIcons(){document.querySelectorAll('[data-icon]').forEach(e=>{const n=e.dataset.icon,s=e.dataset.size||18;e.innerHTML='<svg viewBox="0 0 24 24" width="'+s+'" height="'+s+'" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block">'+(ICONS[n]||'')+'</svg>'})}document.addEventListener('DOMContentLoaded',renderIcons);</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;600&family=Cairo:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+  <div class="bg-glow">
+    <div class="mesh-blob mesh-1"></div>
+    <div class="mesh-blob mesh-2"></div>
+    <div class="mesh-blob mesh-3"></div>
+  </div>
+  <div id="toast-container" class="toast-container"></div>
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <div id="global-loader"></div>
+
+  <!-- Mobile Header -->
+  <header class="mobile-header">
+    <div class="mobile-brand">
+      <img src="favicon.ico" alt="Logo" class="mobile-logo">
+      <span>EB Bot</span>
+    </div>
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </header>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">
+      <span class="toggle-icon">◀</span>
+    </button>
+    <div class="sidebar-brand">
+      <img src="favicon.ico" alt="EB Bot Logo" class="brand-logo"
+        style="width: 50px; height: 50px; object-fit: contain;">
+      <h1>EB Bot</h1>
+    </div>
+    <div class="sidebar-selector-wrap">
+      <div class="guild-dropdown" id="guild-dropdown">
+        <button class="guild-dropdown-btn" id="guild-btn" onclick="toggleDropdown()">
+          <span class="guild-btn-icon" id="guild-btn-icon" data-icon="globe" data-size="20"></span>
+          <span class="guild-btn-text" id="guild-btn-text" data-i18n="guild.select">Select Server</span>
+          <span class="guild-btn-arrow">▾</span>
+        </button>
+        <div class="guild-dropdown-menu" id="guild-menu">
+          <div class="guild-search-wrap">
+            <input type="text" class="guild-search" id="guild-search" placeholder="Search servers..."
+              data-i18n="guild.search" oninput="filterGuilds(this.value)">
+          </div>
+          <div class="guild-list" id="guild-list">
+            <p class="placeholder" data-i18n="guild.loading">Loading...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <nav>
+      <a href="#" class="nav-item active" data-section="overview" data-tooltip="Overview">
+        <span class="nav-icon" data-icon="chart"></span> <span data-i18n="nav.overview">Overview</span>
+      </a>
+      <a href="#" class="nav-item" data-section="leaderboard" data-tooltip="Leaderboard">
+        <span class="nav-icon" data-icon="trophy"></span> <span data-i18n="nav.leaderboard">Leaderboard</span>
+      </a>
+      <a href="#" class="nav-item" data-section="music" data-tooltip="Music">
+        <span class="nav-icon" data-icon="music"></span> <span data-i18n="nav.music">Music</span>
+      </a>
+      <a href="#" class="nav-item" data-section="moderation" data-tooltip="Moderation">
+        <span class="nav-icon" data-icon="shield"></span> <span data-i18n="nav.moderation">Moderation</span>
+      </a>
+      <a href="#" class="nav-item" data-section="giveaways" data-tooltip="Giveaways">
+        <span class="nav-icon" data-icon="gift"></span> <span data-i18n="nav.giveaways">Giveaways</span>
+      </a>
+      <a href="#" class="nav-item" data-section="members" data-tooltip="Members">
+        <span class="nav-icon" data-icon="users"></span> <span data-i18n="nav.members">Members</span>
+      </a>
+      <a href="#" class="nav-item" data-section="welcome" data-tooltip="Welcome">
+        <span class="nav-icon" data-icon="wave"></span> <span>Welcome</span>
+      </a>
+      <a href="#" class="nav-item" data-section="tickets" data-tooltip="Tickets">
+        <span class="nav-icon" data-icon="ticket"></span> <span>Tickets</span>
+      </a>
+      <a href="#" class="nav-item" data-section="levels" data-tooltip="Levels">
+        <span class="nav-icon" data-icon="growth"></span> <span>Levels</span>
+      </a>
+      <a href="#" class="nav-item" data-section="logging" data-tooltip="Logs">
+        <span class="nav-icon" data-icon="clipboard"></span> <span data-i18n="nav.logging">Logs</span>
+      </a>
+      <a href="#" class="nav-item" data-section="embed" data-tooltip="Embed">
+        <span class="nav-icon" data-icon="builder"></span> <span>Embed</span>
+      </a>
+      <a href="#" class="nav-item" data-section="owner" data-tooltip="Verification">
+        <span class="nav-icon" data-icon="lock"></span> <span>Verification</span>
+      </a>
+      <a href="#" class="nav-item" data-section="settings" data-tooltip="Settings">
+        <span class="nav-icon" data-icon="settings"></span> <span data-i18n="nav.settings">Settings</span>
+      </a>
+      <a href="#" class="nav-item" data-section="servers" data-tooltip="Switch Server">
+        <span class="nav-icon" data-icon="globe"></span> <span data-i18n="nav.servers">Servers</span>
+      </a>
+    </nav>
+    <div class="sidebar-user" id="sidebar-user">
+      <div class="user-avatar-wrap">
+        <img src="https://cdn.discordapp.com/embed/avatars/0.png" id="user-avatar" class="user-avatar">
+        <div class="user-status-indicator online"></div>
+      </div>
+      <div class="user-info">
+        <div class="user-name" id="user-name">Loading...</div>
+        <div class="user-tag" id="user-tag">Bot Admin</div>
+      </div>
+      <div style="display: flex; gap: 5px;">
+        <button class="btn-login" id="btn-login" onclick="location.href='/api/auth/discord'" title="Login with Discord"
+          class="hidden">
+          <span data-icon="key" data-size="16"></span>
+        </button>
+        <button class="btn-logout" id="btn-logout" onclick="logout()" title="Logout">
+          <span data-icon="rightArrow" data-size="16"></span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-main">
+        <h2 id="page-title">Overview</h2>
+        <p class="header-sub" id="page-subtitle">Bot statistics at a glance</p>
+      </div>
+
+      <!-- Selected Guild Info (Dynamic) -->
+      <div class="header-guild-info hidden" id="selected-guild-header">
+        <div class="guild-badge">
+          <span id="header-guild-icon" data-icon="globe" data-size="18"></span>
+          <span id="header-guild-name"></span>
+          <div id="health-status-badge" class="health-badge healthy" title="Click for diagnostics">Healthy</div>
+          <button id="btn-fix-perms" class="btn-fix-perms hidden" onclick="fixPermissions()"><span data-icon="gear" data-size="14"></span> Fix Permissions</button>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="lang-selector-wrap" style="margin-right: 15px;">
+          <select id="lang-select" class="panel-select"
+            style="padding: 6px 12px; font-size: 12px; border-radius: 20px; width: auto;"
+            onchange="i18n.setLanguage(this.value)">
+            <option value="en">EN</option>
+            <option value="ar">AR</option>
+            <option value="de">DE</option>
+          </select>
+        </div>
+        <div class="ping-badge warn" id="ping-badge">--</div>
+      </div>
+    </header>
+
+    <!-- Overview Section -->
+    <section class="section active" id="section-overview">
+      <div id="bot-offline-banner" class="bot-offline-banner hidden">
+        <span class="bo-icon" data-icon="warning"></span>
+        <div class="bo-text">
+          <strong>Bot Offline</strong>
+          The bot is currently offline or initializing. Stats may be unavailable.
+        </div>
+      </div>
+      <div id="permission-warning-banner" class="warning-banner hidden">
+        <span class="warn-icon" data-icon="warning"></span>
+        <div class="warn-text">
+          <strong data-i18n="warn.action_required">Action Required:</strong> <span data-i18n="warn.missing_perms">Bot is
+            missing critical permissions.</span>
+          <span id="missing-perms-summary"></span>
+        </div>
+        <button class="btn-warn-action" onclick="switchSection('settings', 'security')" data-i18n="btn.fix_now">Fix
+          Now</button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card glow-pink">
+          <div class="stat-icon-wrap"><span class="stat-icon" data-icon="globe" data-size="22"></span></div>
+          <div class="stat-info">
+            <span class="stat-value" id="stat-guilds">&nbsp;</span>
+            <span class="stat-label" data-i18n="stats.servers">Servers</span>
+          </div>
+        </div>
+        <div class="stat-card glow-blue">
+          <div class="stat-icon-wrap"><span class="stat-icon" data-icon="users" data-size="22"></span></div>
+          <div class="stat-info">
+            <span class="stat-value" id="stat-users">&nbsp;</span>
+            <span class="stat-label" data-i18n="stats.users">Users</span>
+          </div>
+        </div>
+        <div class="stat-card glow-green">
+          <div class="stat-icon-wrap"><span class="stat-icon" data-icon="bolt" data-size="22"></span></div>
+          <div class="stat-info">
+            <span class="stat-value" id="stat-commands">&nbsp;</span>
+            <span class="stat-label" data-i18n="stats.commands">Commands</span>
+          </div>
+        </div>
+        <div class="stat-card glow-purple">
+          <div class="stat-icon-wrap"><span class="stat-icon" data-icon="stopwatch" data-size="22"></span></div>
+          <div class="stat-info">
+            <span class="stat-value" id="stat-uptime">&nbsp;</span>
+            <span class="stat-label" data-i18n="stats.uptime">Uptime</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-grid">
+        <div class="panel">
+          <h3 class="panel-title"><span data-icon="trophy" data-size="18"></span> <span data-i18n="panel.top_members">Top Members</span></h3>
+          <div class="panel-content" id="overview-leaderboard">
+            <p class="placeholder" data-i18n="placeholder.select_server">Select a server to view</p>
+          </div>
+        </div>
+        <div class="panel">
+          <h3 class="panel-title"><span data-icon="shield" data-size="18"></span> <span data-i18n="panel.system_health">System Health</span></h3>
+          <div class="panel-content" id="system-health">
+            <div class="health-item">
+              <span class="health-label" data-i18n="health.database">Database</span>
+              <span class="health-status status-good" data-i18n="health.connected">Connected</span>
+            </div>
+            <div class="health-item" id="bot-conn-health">
+              <span class="health-label">Bot Connection</span>
+              <span class="health-status" id="health-bot-status">Initializing...</span>
+            </div>
+            <div class="health-item">
+              <span class="health-label" data-i18n="health.ping">API Latency</span>
+              <span class="health-status" id="health-ping">--</span>
+            </div>
+            <div class="health-item">
+              <span class="health-label">Memory</span>
+              <span class="health-status" id="health-memory">-- MB</span>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3 class="panel-title"><span data-icon="sparkles" data-size="18"></span> Live Activity Feed</h3>
+          <div id="activity-feed" class="activity-list">
+            <div class="skeleton" style="height: 40px; margin-bottom: 10px; border-radius: 8px;"></div>
+            <div class="skeleton" style="height: 40px; margin-bottom: 10px; border-radius: 8px;"></div>
+            <div class="skeleton" style="height: 40px; border-radius: 8px;"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3 class="panel-title"><span data-icon="chart" data-size="18"></span> Message Activity</h3>
+          <div class="panel-content">
+            <canvas id="message-chart" style="max-height: 200px;"></canvas>
+          </div>
+        </div>
+        <div class="panel">
+          <h3 class="panel-title"><span data-icon="growth" data-size="18"></span> Server Growth</h3>
+          <div class="panel-content">
+            <canvas id="growth-chart" style="max-height: 200px;"></canvas>
+          </div>
+        </div>
+        <!-- Terminal Feed -->
+        <div class="panel full-width">
+          <div class="panel-header-flex">
+            <h3 class="panel-title"><span data-icon="terminal" data-size="18"></span> <span data-i18n="log.terminal">System Terminal</span></h3>
+            <div class="terminal-controls">
+              <span class="status-indicator online"></span>
+              <span class="status-text" data-i18n="security.active">Active</span>
+            </div>
+          </div>
+          <div class="terminal-body" id="live-terminal">
+            <div class="terminal-line"><span class="t-cyan">[EB_BOT]</span> System initialized successfully.</div>
+            <div class="terminal-line"><span class="t-green">[SECURE]</span> Rate limiter established.</div>
+            <div class="terminal-line"><span class="t-magenta">[VERSION]</span> Codebase upgraded to v2.5.0-PRO.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="section-leaderboard">
+      <div class="lb-header">
+        <div class="tab-bar">
+          <button class="tab active" data-type="xp">XP</button>
+          <button class="tab" data-type="messages"><span data-icon="message" data-size="14"></span> Messages</button>
+          <button class="tab" data-type="voice"><span data-icon="voice" data-size="14"></span> Voice</button>
+        </div>
+        <div class="lb-controls" style="display: flex; gap: 10px;">
+          <button class="btn btn-outline" onclick="exportLeaderboardCSV()" title="Export CSV"><span data-icon="file" data-size="14"></span></button>
+          <button class="btn btn-danger" onclick="resetXPAction()" title="Reset XP"><span data-icon="trash" data-size="14"></span></button>
+        </div>
+        <div class="lb-search-wrap">
+          <input type="text" id="lb-search" class="lb-search" placeholder="Search members..."
+            oninput="filterLeaderboard(this.value)">
+        </div>
+      </div>
+
+      <div class="podium-wrap" id="podium-wrap">
+        <!-- Podium will be inserted here via JS -->
+      </div>
+
+      <div class="leaderboard-list" id="leaderboard-list">
+        <p class="placeholder">Select a server to view the leaderboard</p>
+      </div>
+    </section>
+
+    <section class="section" id="section-music">
+      <div class="now-playing-card" id="now-playing">
+        <p class="placeholder">No music is currently playing</p>
+      </div>
+
+      <!-- Audio Visualizer -->
+      <div id="audio-visualizer" class="visualizer-container hidden">
+        <div class="vis-bar"></div>
+        <div class="vis-bar"></div>
+        <div class="vis-bar"></div>
+        <div class="vis-bar"></div>
+        <div class="vis-bar"></div>
+        <div class="vis-bar"></div>
+        <div class="vis-bar"></div>
+        <div class="vis-bar"></div>
+        <div class="vis-bar"></div>
+      </div>
+
+      <!-- Filter Hub -->
+      <div id="filter-hub" class="filter-hub hidden">
+        <button class="filter-pill" onclick="toggleFilter('bassboost')">Bassboost</button>
+        <button class="filter-pill" onclick="toggleFilter('nightcore')">Nightcore</button>
+        <button class="filter-pill" onclick="toggleFilter('vaporwave')">Vaporwave</button>
+        <button class="filter-pill" onclick="toggleFilter('8D')">8D</button>
+        <button class="filter-pill" onclick="toggleFilter('treble')">Treble</button>
+      </div>
+
+      <!-- Progress Bar Overlay -->
+      <div id="playing-progress-wrap" class="progress-container hidden">
+        <div class="progress-labels">
+          <span id="progress-current">0:00</span>
+          <span id="progress-total">0:00</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progress-bar-fill"></div>
+        </div>
+      </div>
+
+      <div class="music-search-container">
+        <input type="text" id="music-search-input" class="panel-input" placeholder="Search for a song..."
+          onkeyup="handleMusicSearch(event)">
+        <div id="music-search-results" class="search-results-overlay hidden"></div>
+      </div>
+
+      <div class="controls-bar" id="music-controls">
+        <button class="ctrl-btn" id="btn-pause" onclick="musicControl('pause')" title="Pause/Resume"><span data-icon="pause" data-size="16"></span></button>
+        <button class="ctrl-btn" id="btn-skip" onclick="musicControl('skip')" title="Skip"><span data-icon="skip" data-size="16"></span></button>
+        <button class="ctrl-btn" id="btn-shuffle" onclick="musicControl('shuffle')" title="Shuffle"><span data-icon="shuffle" data-size="16"></span></button>
+        <button class="ctrl-btn" id="btn-loop-track" onclick="musicControl('loop', 1)" title="Loop Track"><span data-icon="repeatOne" data-size="16"></span></button>
+        <button class="ctrl-btn" id="btn-loop-queue" onclick="musicControl('loop', 2)" title="Loop Queue"><span data-icon="repeat" data-size="16"></span></button>
+        <button class="ctrl-btn" id="btn-loop-off" onclick="musicControl('loop', 0)" title="Loop Off"><span data-icon="rightArrow" data-size="16"></span></button>
+        <button class="ctrl-btn" id="btn-autoplay" onclick="toggleAutoplay()" title="Toggle Autoplay"><span data-icon="infinity" data-size="16"></span></button>
+        <button class="ctrl-btn" id="btn-lyrics" onclick="showLyrics()" title="Show Lyrics"><span data-icon="voice" data-size="16"></span></button>
+        <button class="ctrl-btn danger" id="btn-clear" onclick="musicControl('clear')" title="Clear Queue"><span data-icon="broom" data-size="16"></span></button>
+        <button class="ctrl-btn danger" id="btn-stop" onclick="musicControl('stop')" title="Stop"><span data-icon="stop" data-size="16"></span></button>
+        <div class="volume-control">
+          <span class="vol-icon" data-icon="volume" data-size="16"></span>
+          <input type="range" id="volume-slider" min="0" max="100" value="50" class="slider"
+            oninput="musicVolume(this.value)">
+          <span class="vol-label" id="vol-label">50%</span>
+        </div>
+      </div>
+      <div class="panel">
+        <h3 class="panel-title"><span data-icon="clipboard" data-size="16"></span> Queue</h3>
+        <div class="queue-list" id="queue-list">
+          <p class="placeholder">Queue is empty</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="section-moderation">
+      <div class="panel">
+        <div class="panel-header-flex">
+          <div class="warnings-list" id="warnings-list">
+            <p class="placeholder">Select a server to view warnings</p>
+          </div>
+        </div>
+        <div class="panel">
+          <h3 class="panel-title"><span data-icon="ban" data-size="16"></span> Manual Action</h3>
+          <div class="panel-content">
+            <div class="setting-row">
+              <span class="stat-label">Target Member</span>
+              <select id="mod-action-userid" class="panel-select">
+                <option value="">Select a member...</option>
+              </select>
+            </div>
+            <div class="setting-row">
+              <span class="stat-label">Action</span>
+              <select id="mod-action-type" class="panel-select">
+                <option value="warn">Warn</option>
+                <option value="timeout">Timeout</option>
+                <option value="kick">Kick</option>
+                <option value="ban">Ban</option>
+              </select>
+            </div>
+            <div class="setting-row">
+              <span class="stat-label">Reason</span>
+              <input type="text" id="mod-action-reason" class="panel-input" placeholder="Reason...">
+            </div>
+            <button class="btn btn-primary mt-15" onclick="performModerationAction()">Execute</button>
+          </div>
+        </div>
+        <div class="panel">
+          <h3 class="panel-title"><span data-icon="shield" data-size="16"></span> AutoMod Controls</h3>
+          <div class="panel-content" id="automod-info">
+            <p class="placeholder">Select a server to manage</p>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header-flex">
+            <h3 class="panel-title"><span data-icon="wave" data-size="16"></span> Welcome System</h3>
+            <button class="action-btn" id="btn-test-welcome" onclick="testWelcome()">Test Welcome</button>
+          </div>
+          <div class="panel-content" id="welcome-info">
+            <p class="placeholder">Select a server to manage</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header-flex">
+            <h3 class="panel-title"><span data-icon="shield" data-size="16"></span> Audit Log Viewer</h3>
+            <button class="btn-refresh" onclick="fetchAuditLogs()"><span data-icon="repeat" data-size="14"></span> Refresh</button>
+          </div>
+          <div class="table-wrap">
+            <table class="leaderboard-table">
+              <thead>
+                <tr>
+                  <th>Action</th>
+                  <th>By</th>
+                  <th>Target</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody id="audit-log-body">
+                <tr>
+                  <td colspan="4" class="t-center">Select server to view logs</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel">
+          <h3 class="panel-title"><span data-icon="shield" data-size="16"></span> Custom Filter Rules</h3>
+          <div class="panel-content">
+            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+              <input type="text" id="custom-filter-input" class="panel-input" placeholder="Enter word or regex...">
+              <button class="btn btn-primary" onclick="addCustomFilter()"
+                style="width: auto; padding: 0 15px;">Add</button>
+            </div>
+            <div id="custom-filters-list" class="activity-list" style="max-height: 150px; overflow-y: auto;">
+              <!-- Filters populated here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Embed Section -->
+    <section class="section" id="section-embed">
+      <div class="panel">
+        <h3 class="panel-title"><span data-icon="builder" data-size="16"></span> Custom Embed Builder Pro</h3>
+        <div class="embed-builder-layout">
+          <div class="embed-editor">
+            <div class="editor-tabs">
+              <button class="editor-tab-btn active" onclick="switchEditorTab('content')"><span data-icon="pencil" data-size="14"></span> Content</button>
+              <button class="editor-tab-btn" onclick="switchEditorTab('author')"><span data-icon="users" data-size="14"></span> Author/Footer</button>
+              <button class="editor-tab-btn" onclick="switchEditorTab('images')"><span data-icon="file" data-size="14"></span> Images</button>
+            </div>
+
+            <div id="editor-panel-content" class="editor-panel">
+              <div class="setting-row">
+                <span class="stat-label">Target Channel</span>
+                <select id="embed-channel" class="panel-select channel-select">
+                  <option value="">Select a channel...</option>
+                </select>
+              </div>
+              <div class="setting-row">
+                <span class="stat-label">Title</span>
+                <input type="text" id="embed-title" class="panel-input" placeholder="Enter title..." oninput="updateEmbedPreview()">
+              </div>
+              <div class="setting-row">
+                <span class="stat-label">Color</span>
+                <input type="color" id="embed-color" class="panel-color-picker" value="#00fbff" oninput="updateEmbedPreview()">
+              </div>
+              <div class="setting-row">
+                <span class="stat-label">Description</span>
+                <textarea id="embed-desc" class="panel-textarea" placeholder="Enter content..." rows="4" oninput="updateEmbedPreview()"></textarea>
+              </div>
+              <div class="setting-row mt-15">
+                <span class="stat-label">Custom Fields</span>
+                <div id="eb-fields-manager"></div>
+                <button class="btn-add-field" onclick="addEmbedField()">+ Add New Field</button>
+              </div>
+            </div>
+
+            <div id="editor-panel-author" class="editor-panel hidden">
+              <div class="setting-row">
+                <span class="stat-label">Author Name</span>
+                <input type="text" id="embed-author-name" class="panel-input" placeholder="Author name..." oninput="updateEmbedPreview()">
+              </div>
+              <div class="setting-row">
+                <span class="stat-label">Author Icon URL</span>
+                <input type="text" id="embed-author-icon" class="panel-input" placeholder="https://..." oninput="updateEmbedPreview()">
+              </div>
+              <div class="setting-row">
+                <span class="stat-label">Footer Text</span>
+                <input type="text" id="embed-footer-text" class="panel-input" placeholder="Footer text..." oninput="updateEmbedPreview()">
+              </div>
+              <div class="setting-row">
+                <span class="stat-label">Footer Icon URL</span>
+                <input type="text" id="embed-footer-icon" class="panel-input" placeholder="https://..." oninput="updateEmbedPreview()">
+              </div>
+            </div>
+
+            <div id="editor-panel-images" class="editor-panel hidden">
+              <div class="setting-row">
+                <span class="stat-label">Main Image URL</span>
+                <input type="text" id="embed-image" class="panel-input" placeholder="https://..." oninput="updateEmbedPreview()">
+              </div>
+              <div class="setting-row">
+                <span class="stat-label">Thumbnail URL</span>
+                <input type="text" id="embed-thumbnail" class="panel-input" placeholder="https://..." oninput="updateEmbedPreview()">
+              </div>
+            </div>
+
+            <button class="btn btn-primary w-100" onclick="sendCustomEmbed()" style="margin-top: 20px;"><span data-icon="arrowUp" data-size="14"></span> Send Embed to Discord</button>
+          </div>
+
+          <div class="embed-preview-container">
+            <div class="embed-preview-header">
+              <img src="https://cdn.discordapp.com/embed/avatars/0.png" width="36" height="36" style="border-radius: 50%;">
+              <div style="font-weight: 600; font-size: 14px; color: var(--text);">EB Bot <span class="eb-bot-tag">BOT</span></div>
+            </div>
+            <div class="embed-preview" id="eb-preview-box">
+              <div class="eb-author hidden" id="eb-pre-author">
+                <img src="" class="eb-author-icon hidden" id="eb-pre-author-icon">
+                <span id="eb-pre-author-name"></span>
+              </div>
+              <div class="eb-title" id="eb-pre-title">Embed Title</div>
+              <div class="eb-desc" id="eb-pre-desc">Your message content will appear here...</div>
+              <div class="eb-fields" id="eb-pre-fields"></div>
+              <img src="" class="eb-image hidden" id="eb-pre-image">
+              <div class="eb-footer hidden" id="eb-pre-footer">
+                <img src="" class="eb-footer-icon hidden" id="eb-pre-footer-icon">
+                <span id="eb-pre-footer-text"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="section-giveaways">
+      <div class="panel">
+        <h3 class="panel-title"><span data-icon="gift" data-size="16"></span> Start New Giveaway</h3>
+        <div class="panel-content">
+          <div class="setting-row">
+            <span class="stat-label">Prize</span>
+            <input type="text" id="g-prize" class="panel-input" placeholder="e.g. Nitro Basic">
+          </div>
+          <div class="setting-row">
+            <span class="stat-label">Duration (minutes)</span>
+            <input type="number" id="g-duration" class="panel-input" placeholder="60">
+          </div>
+          <div class="setting-row">
+            <span class="stat-label">Winners</span>
+            <input type="number" id="g-winners" class="panel-input" value="1">
+          </div>
+          <div class="setting-row">
+            <span class="stat-label">Target Channel</span>
+            <select id="g-channel" class="panel-select channel-select">
+              <option value="">Select a channel...</option>
+            </select>
+          </div>
+          <button class="btn btn-primary mt-15" onclick="createGiveawayAction()">Start
+            Giveaway</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header-flex">
+          <h3 class="panel-title"><span data-icon="gift" data-size="16"></span> Giveaway Manager</h3>
+          <span class="badge" id="giveaway-count-total">0 Active</span>
+        </div>
+        <div class="table-wrap">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Prize</th>
+                <th>Winners</th>
+                <th>Ends</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="giveaway-list-body">
+              <tr>
+                <td colspan="4" class="t-center">Select server to view giveaways</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="section-members">
+      <div class="panel">
+        <div class="panel-header-flex">
+          <h3 class="panel-title"><span data-icon="users" data-size="16"></span> Member Management</h3>
+          <div class="panel-search-wrap">
+            <input type="text" id="member-search" class="panel-search" placeholder="Search members..."
+              oninput="handleMemberSearch(this.value)">
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Joined</th>
+                <th>Roles</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="member-list-body">
+              <tr>
+                <td colspan="4" class="t-center">Select server to view members</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Welcome Section -->
+    <section class="section" id="section-welcome">
+      <div class="dash-grid-3">
+        <div class="dash-card dash-card-accent">
+          <div class="dash-card-icon" data-icon="wave" data-size="24"></div>
+          <div class="dash-card-body">
+            <div class="dash-card-label">Welcome System</div>
+            <div class="dash-card-value" id="welcome-status-badge">Disabled</div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-icon" data-icon="roles" data-size="24"></div>
+          <div class="dash-card-body">
+            <div class="dash-card-label">Auto-Role</div>
+            <div class="dash-card-value" id="welcome-autorole-name">None</div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-icon" data-icon="announce" data-size="24"></div>
+          <div class="dash-card-body">
+            <div class="dash-card-label">Channel</div>
+            <div class="dash-card-value" id="welcome-channel-name">Not set</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-grid">
+        <div class="panel">
+          <h3 class="panel-title"><span data-icon="wave" data-size="16"></span> Welcome System 2.0</h3>
+          <div class="panel-content">
+            <div class="setting-row">
+              <span class="stat-label">Enable Welcome Messages</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="welcome2-enabled" onchange="saveWelcomeToggle()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div id="welcome2-settings-group">
+              <div class="setting-row">
+                <span class="stat-label">Welcome Channel</span>
+                <select id="welcome2-channel" class="panel-select channel-select">
+                  <option value="">Select Channel...</option>
+                </select>
+              </div>
+              <div class="setting-row">
+                <span class="stat-label">Auto-Role on Join</span>
+                <select id="welcome2-autorole" class="panel-select role-select">
+                  <option value="">None</option>
+                </select>
+              </div>
+              <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
+              <div class="setting-row">
+                <span class="stat-label">Message Type</span>
+                <div class="editor-tabs" style="justify-content: flex-start; margin-bottom: 10px;">
+                  <button class="editor-tab-btn active" id="btn-welcome2-text"
+                    onclick="toggleWelcome2Type('text')">Text</button>
+                  <button class="editor-tab-btn" id="btn-welcome2-embed" onclick="toggleWelcome2Type('embed')">Rich
+                    Embed</button>
+                </div>
+              </div>
+              <div id="welcome2-mode-text">
+                <div class="setting-row">
+                  <span class="stat-label">Message Content</span>
+                  <textarea id="welcome2-message" class="panel-textarea" rows="3"
+                    placeholder="Welcome {user} to {guild}!"></textarea>
+                  <p class="t-dim" style="font-size: 12px; margin-top: 5px;">Variables: {user}, {guild}, {count}</p>
+                </div>
+              </div>
+              <div id="welcome2-mode-embed" class="hidden">
+                <button class="btn btn-outline" onclick="loadEmbedBuilderForWelcome2()"
+                  style="width: 100%; margin-bottom: 15px;"><span data-icon="builder" data-size="14"></span> Open Embed Builder</button>
+                <div class="setting-row">
+                  <span class="stat-label">Embed JSON (Advanced)</span>
+                  <textarea id="welcome2-embed-json" class="panel-textarea" rows="5" placeholder="{ ... }"
+                    readonly></textarea>
+                </div>
+              </div>
+              <button class="btn btn-primary w-100" onclick="saveWelcomeConfig2()">Save Welcome Config</button>
+              <button class="btn btn-outline w-100" style="margin-top: 8px;" onclick="testWelcome()"><span data-icon="test" data-size="14"></span> Test Welcome Message</button>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3 class="panel-title"><span data-icon="info" data-size="16"></span> How It Works</h3>
+          <div class="panel-content">
+            <div class="info-card-list">
+              <div class="info-step"><span class="info-num">1</span><span>Enable the system and pick a channel.</span></div>
+              <div class="info-step"><span class="info-num">2</span><span>Set a message using <code>{user}</code>, <code>{guild}</code>, <code>{count}</code> placeholders.</span></div>
+              <div class="info-step"><span class="info-num">3</span><span>Optionally assign an auto-role to new members on join.</span></div>
+              <div class="info-step"><span class="info-num">4</span><span>Click "Test" to preview the welcome message in the channel.</span></div>
+            </div>
+            <hr style="border-color: var(--glass-border); margin: 18px 0;">
+            <p class="t-dim" style="font-size: 12px;">For richer messages, switch to <b>Embed</b> mode above and use the Embed Builder.</p>
+            <button class="btn btn-outline w-100" style="margin-top: 10px;" onclick="loadEmbedBuilderForWelcome2()"><span data-icon="builder" data-size="14"></span> Open Embed Builder</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tickets Section -->
+    <section class="section" id="section-tickets">
+      <div class="dash-grid-3">
+        <div class="dash-card dash-card-accent">
+          <div class="dash-card-icon" data-icon="ticket" data-size="24"></div>
+          <div class="dash-card-body">
+            <div class="dash-card-label">Open Tickets</div>
+            <div class="dash-card-value" id="tickets-open-count">--</div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-icon" data-icon="folder" data-size="24"></div>
+          <div class="dash-card-body">
+            <div class="dash-card-label">Category</div>
+            <div class="dash-card-value" id="tickets-category-name">Not set</div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-icon" data-icon="file" data-size="24"></div>
+          <div class="dash-card-body">
+            <div class="dash-card-label">Transcript Channel</div>
+            <div class="dash-card-value" id="tickets-transcript-name">Not set</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-grid">
+        <div class="panel">
+          <h3 class="panel-title"><span data-icon="ticket" data-size="16"></span> Ticket Configuration</h3>
+          <div class="panel-content">
+            <div class="setting-row">
+              <span class="stat-label">Ticket Category</span>
+              <select id="tickets2-category" class="panel-select category-select">
+                <option value="">Select Category...</option>
+              </select>
+              <p class="t-dim" style="font-size: 12px; margin-top: 4px;">New tickets will be created here.</p>
+            </div>
+            <div class="setting-row">
+              <span class="stat-label">Transcript Channel</span>
+              <select id="tickets2-transcript" class="panel-select channel-select">
+                <option value="">Select Channel...</option>
+              </select>
+              <p class="t-dim" style="font-size: 12px; margin-top: 4px;">Closed transcripts sent here.</p>
+            </div>
+            <button class="btn btn-primary w-100" onclick="saveTicketConfig2()">Save Ticket Config</button>
+          </div>
+        </div>
+          <div class="panel">
+            <h3 class="panel-title"><span data-icon="clipboard" data-size="16"></span> Open Tickets</h3>
+            <div id="tickets-open-list" class="activity-list">
+              <p class="placeholder">Select a server to view open tickets</p>
+            </div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top: 16px;">
+          <h3 class="panel-title"><span data-icon="terminal" data-size="16"></span> Ticket Command Toggles</h3>
+          <div class="panel-content" id="ticket-command-toggles">
+            <p class="placeholder">Select a server to manage ticket commands</p>
+          </div>
+        </div>
+      </section>
+
+    <!-- Levels Section -->
+    <section class="section" id="section-levels">
+      <div class="dash-grid-3">
+        <div class="dash-card dash-card-accent">
+          <div class="dash-card-icon" data-icon="bolt" data-size="24"></div>
+          <div class="dash-card-body">
+            <div class="dash-card-label">XP System</div>
+            <div class="dash-card-value" id="levels-xp-status">Disabled</div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-icon" data-icon="medal" data-size="24"></div>
+          <div class="dash-card-body">
+            <div class="dash-card-label">Level Rewards</div>
+            <div class="dash-card-value" id="levels-rewards-count">--</div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-icon" data-icon="multiply" data-size="24"></div>
+          <div class="dash-card-body">
+            <div class="dash-card-label">XP Multiplier</div>
+            <div class="dash-card-value" id="levels-multiplier-display">1.0x</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-grid">
+        <div class="panel">
+          <h3 class="panel-title"><span data-icon="growth" data-size="16"></span> XP & Leveling Settings</h3>
+          <div class="panel-content">
+            <div class="setting-row">
+              <span class="stat-label">Enable XP System</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="levels-xp-toggle" onchange="toggleXPSystem()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="setting-row">
+              <span class="stat-label">XP Multiplier</span>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="range" id="levels-multiplier" class="slider" min="0.5" max="5.0" step="0.5" value="1.0"
+                  oninput="document.getElementById('levels-mult-val').textContent = this.value + 'x'">
+                <span id="levels-mult-val" style="font-weight: 700; color: var(--neon-blue); min-width: 36px;">1.0x</span>
+              </div>
+            </div>
+            <div class="setting-row">
+              <span class="stat-label">Excluded Channels</span>
+              <select id="levels-ignored-channels" class="panel-select" multiple style="height: 90px;">
+              </select>
+              <p class="t-dim" style="font-size: 11px; margin-top: 4px;">Hold Ctrl/Cmd to select multiple</p>
+            </div>
+            <button class="btn btn-primary w-100" onclick="saveLevelsConfig()">Save XP Config</button>
+          </div>
+        </div>
+        <div class="panel">
+          <h3 class="panel-title"><span data-icon="medal" data-size="16"></span> Level Leaderboard</h3>
+          <div class="tab-bar" style="margin-bottom: 16px;">
+            <div class="tab active" data-type="xp" onclick="fetchLevelsLeaderboard('xp', this)">XP</div>
+            <div class="tab" data-type="messages" onclick="fetchLevelsLeaderboard('messages', this)">Messages</div>
+            <div class="tab" data-type="voice" onclick="fetchLevelsLeaderboard('voice', this)">Voice</div>
+          </div>
+          <div class="leaderboard-list" id="levels-leaderboard-list">
+            <p class="placeholder">Select a server to view leaderboard</p>
+          </div>
+        </div>
+        <div class="panel">
+          <h3 class="panel-title"><span data-icon="medal" data-size="16"></span> Level Role Rewards</h3>
+          <div class="panel-content">
+            <div class="form-grid" style="display: grid; grid-template-columns: 80px 1fr auto; gap: 10px; margin-bottom: 15px;">
+              <input type="number" id="reward-level" class="panel-input" placeholder="Level">
+              <select id="reward-role" class="panel-select role-select">
+                <option value="">Select Role...</option>
+              </select>
+              <button class="btn btn-primary" onclick="addLevelReward()" style="width: auto; padding: 0 15px;">Add</button>
+            </div>
+            <div id="reward-list" class="activity-list"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Logs Section -->
+    <section class="section" id="section-logging">
+      <div class="panel">
+        <div class="panel-header-flex">
+          <h3 class="panel-title"><span data-icon="clipboard" data-size="16"></span> Logs — Event Routing</h3>
+          <span class="badge" style="background: rgba(74,222,128,0.1); color: var(--green); border: 1px solid rgba(74,222,128,0.2);">Real-time</span>
+        </div>
+        <p class="t-dim" style="font-size: 13px; margin-bottom: 20px;">Route each Discord event to a dedicated channel for clean, organized logs.</p>
+        <div class="log-card-grid" id="logging-cards">
+          <!-- Log Cards populated by app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Owner Section -->
+    <section class="section" id="section-owner">
+      <div class="panel-grid">
+        <div class="panel">
+          <h3 class="panel-title"><span data-icon="lock" data-size="16"></span> Verification System</h3>
+          <div class="panel-content">
+            <div class="setting-row">
+              <span class="stat-label">Enable Verification</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="verify-enabled" onchange="toggleVerificationSettings()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div id="verify-settings-group" class="hidden">
+              <div class="setting-row">
+                <span class="stat-label">Verified Role</span>
+                <select id="verify-role" class="panel-select role-select">
+                  <option value="">Select Role...</option>
+                </select>
+                <p class="t-dim" style="font-size: 12px; margin-top: 5px;">Members receive this role after verifying.</p>
+              </div>
+              <div class="setting-row">
+                <span class="stat-label">Log Channel</span>
+                <select id="verify-log-channel" class="panel-select channel-select">
+                  <option value="">No logging</option>
+                </select>
+                <p class="t-dim" style="font-size: 12px; margin-top: 5px;">Verification attempts are logged here.</p>
+              </div>
+              <button class="btn btn-primary" onclick="saveVerificationSettings()" style="margin-top: 15px; width: 100%;">Save Verification Config</button>
+              <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
+              <div class="info-step" style="font-size: 13px;"><span class="info-num" data-icon="info" data-size="14"></span><span>Create a button in Discord with custom ID <code>verification_entry</code> to trigger this system.</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3 class="panel-title"><span data-icon="robot" data-size="16"></span> Auto-Responder System</h3>
+          <div class="panel-content">
+            <p class="t-dim" style="margin-bottom: 15px; font-size: 13px;">Automatically reply to users when they say specific keywords.</p>
+            <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1.5fr auto; gap: 10px; margin-bottom: 20px;">
+              <input type="text" id="responder-trigger" class="panel-input" placeholder="Keyword (Trigger)">
+              <input type="text" id="responder-response" class="panel-input" placeholder="Bot's Reply">
+              <button class="btn btn-primary" onclick="addAutoResponder()" style="width: auto; padding: 0 20px;">Add</button>
+            </div>
+            <div id="responder-list" class="activity-list">
+              <p class="placeholder">Select a server to manage auto-responders</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="section-settings">
+      <div class="settings-hub">
+        <div class="settings-nav" id="settings-tab-nav">
+          <div class="settings-nav-btn active" onclick="switchSettingsTab('core')"><span data-icon="settings" data-size="14"></span> Core Server</div>
+          <div class="settings-nav-btn" onclick="switchSettingsTab('security')"><span data-icon="shield" data-size="14"></span> Security & Performance</div>
+          <div class="settings-nav-btn" onclick="switchSettingsTab('instance')"
+            style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 10px; padding-top: 15px;"><span data-icon="robot" data-size="14"></span> Bot Instance
+          </div>
+        </div>
+
+        <div class="settings-content-hub">
+          <!-- Core Settings -->
+          <div class="settings-tab-panel active" id="settings-panel-core">
+            <div class="panel">
+              <h3 class="panel-title"><span data-icon="settings" data-size="16"></span> General Bot Settings</h3>
+              <div class="panel-content" id="settings-info">
+                <div class="setting-row">
+                  <span class="stat-label" data-i18n="settings.locale">Server Language</span>
+                  <div style="display: flex; gap: 8px; margin-top: 5px;">
+                    <select id="guild-locale" class="panel-select" style="flex: 1;">
+                      <option value="en">English</option>
+                      <option value="ar">العربية</option>
+                      <option value="de">Deutsch</option>
+                      <option value="fr">Français</option>
+                      <option value="es">Español</option>
+                      <option value="tr">Türkçe</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="saveGuildLocale()" style="width: auto; padding: 0 15px;">Save</button>
+                  </div>
+                  <p class="t-dim" style="font-size: 12px; margin-top: 4px;" data-i18n="settings.locale_hint">This overrides each user's Discord language setting for bot responses.</p>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <h3 class="panel-title"><span data-icon="roles" data-size="16"></span> Bot Identity</h3>
+              <div class="panel-content">
+                <div class="setting-row">
+                  <span class="stat-label">Server Nickname</span>
+                  <div style="display: flex; gap: 8px; margin-top: 5px;">
+                    <input type="text" id="bot-nickname" class="panel-input" placeholder="Enter nickname">
+                    <button class="btn btn-primary" onclick="updateBotNickname()"
+                      style="width: auto; padding: 0 15px;">Save</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <h3 class="panel-title"><span data-icon="save" data-size="16"></span> Backup & Restore</h3>
+              <div class="panel-content">
+                <p class="t-dim" style="font-size: 13px; margin-bottom: 15px;">Backup your server's bot configuration
+                  (Settings, Logging, Toggles) to a JSON file.</p>
+                <div style="display: flex; gap: 10px;">
+                  <button class="btn btn-outline" onclick="backupSettings()" style="flex: 1;"><span data-icon="export" data-size="14"></span> Export Backup</button>
+                  <button class="btn btn-outline" onclick="document.getElementById('restore-input').click()"
+                    style="flex: 1;"><span data-icon="import" data-size="14"></span> Import Backup</button>
+                  <input type="file" id="restore-input" class="hidden" accept=".json"
+                    onchange="restoreSettings(this)">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bot Instance Settings (Global-ish) -->
+          <div class="settings-tab-panel hidden" id="settings-panel-instance">
+            <div class="panel">
+              <h3 class="panel-title"><span data-icon="robot" data-size="16"></span> Bot Presence Manager</h3>
+              <div class="panel-content">
+                <p class="t-dim" style="margin-bottom: 15px; font-size: 13px;">Update the bot's global status and
+                  activity in real-time.</p>
+                <div class="setting-row">
+                  <span class="stat-label">Bot Status</span>
+                  <select id="bot-status" class="panel-select">
+                    <option value="online">Online</option>
+                    <option value="idle">Idle</option>
+                    <option value="dnd">Do Not Disturb</option>
+                    <option value="invisible">Invisible</option>
+                  </select>
+                </div>
+                <div class="setting-row">
+                  <span class="stat-label">Activity Type</span>
+                  <select id="bot-activity-type" class="panel-select">
+                    <option value="0">Playing</option>
+                    <option value="2">Listening to</option>
+                    <option value="3">Watching</option>
+                    <option value="5">Competing in</option>
+                  </select>
+                </div>
+                <div class="setting-row">
+                  <span class="stat-label">Activity Text</span>
+                  <input type="text" id="bot-activity-text" class="panel-input" placeholder="e.g. EB Bot Dashboard">
+                </div>
+                <button class="btn btn-primary w-100" onclick="updateBotPresence()">Apply Presence Pulse <span data-icon="sparkles" data-size="14"></span></button>
+              </div>
+            </div>
+
+            <div class="panel">
+              <h3 class="panel-title"><span data-icon="bridge" data-size="16"></span> Webhook Audit Log Bridge</h3>
+              <div class="panel-content">
+                <p class="t-dim" style="margin-bottom: 15px; font-size: 13px;">Forward dashboard activity logs to a
+                  Discord channel.</p>
+                <div class="setting-row">
+                  <span class="stat-label">Discord Webhook URL</span>
+                  <input type="password" id="log-webhook-url" class="panel-input"
+                    placeholder="https://discord.com/api/webhooks/...">
+                </div>
+                <button class="btn btn-outline w-100" onclick="saveWebhookLogs()">Establish Bridge <span data-icon="bridge" data-size="14"></span></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Security Settings -->
+          <div class="settings-tab-panel hidden" id="settings-panel-security">
+            <!-- Row 1: Permissions + Commands -->
+            <div class="panel">
+              <h3 class="panel-title"><span data-icon="shield" data-size="16"></span> Permissions Guardian</h3>
+              <div class="panel-content">
+                <p class="t-dim" style="margin-bottom: 15px; font-size: 13px;">Check the bot's readiness for this server. Missing permissions will limit features.</p>
+                <div class="table-wrap">
+                  <table class="leaderboard-table">
+                    <thead>
+                      <tr>
+                        <th>Permission</th>
+                        <th>Status</th>
+                        <th>Impacted Features</th>
+                      </tr>
+                    </thead>
+                    <tbody id="permissions-checklist-body">
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <!-- Row 2: Security Hub status -->
+            <div class="panel security-card">
+              <h3 class="panel-title"><span data-icon="lock" data-size="16"></span> Security Hub</h3>
+              <div class="panel-content">
+                <div class="health-item">
+                  <span class="health-label">Rate Limiter</span>
+                  <span class="health-status status-good">Active</span>
+                </div>
+                <div class="health-item">
+                  <span class="health-label">API Hardening</span>
+                  <span class="health-status status-good">Enabled</span>
+                </div>
+                <div class="health-item">
+                  <span class="health-label">Session Encryption</span>
+                  <span class="health-status status-good">On</span>
+                </div>
+              </div>
+            </div>
+            <!-- Row 3: Anti-Raid -->
+            <div class="panel">
+              <h3 class="panel-title"><span data-icon="bolt" data-size="16"></span> Anti-Raid</h3>
+              <div class="panel-content">
+                <p class="t-dim" style="font-size: 13px; margin-bottom: 14px;">Automatically lock the server if a large number of members join in a short time.</p>
+                <div class="setting-row">
+                  <span class="stat-label">Enable Anti-Raid</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="anti-raid-enabled" onchange="saveSecuritySettings()">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="setting-row">
+                  <span class="stat-label">Join threshold (per 10s)</span>
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <input type="number" id="anti-raid-threshold" class="panel-input" style="max-width: 80px;" placeholder="10" min="3" max="100">
+                    <span class="t-dim" style="font-size: 12px;">joins triggers lockdown</span>
+                  </div>
+                </div>
+                <div class="setting-row">
+                  <span class="stat-label">Alert Channel</span>
+                  <select id="anti-raid-channel" class="panel-select channel-select">
+                    <option value="">No alert</option>
+                  </select>
+                </div>
+                <button class="btn btn-primary" onclick="saveSecuritySettings()" style="margin-top: 10px; width: 100%;">Save Anti-Raid Config</button>
+              </div>
+            </div>
+            <!-- Row 4: Anti-Spam -->
+            <div class="panel">
+              <h3 class="panel-title"><span data-icon="ban" data-size="16"></span> Anti-Spam (Advanced)</h3>
+              <div class="panel-content">
+                <p class="t-dim" style="font-size: 13px; margin-bottom: 14px;">Fine-tune spam detection beyond AutoMod. These settings integrate with the bot's built-in AutoMod.</p>
+                <div class="setting-row">
+                  <span class="stat-label">Duplicate message filter</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="spam-duplicate-enabled" onchange="saveSecuritySettings()">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="setting-row">
+                  <span class="stat-label">Max messages per 5s</span>
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <input type="number" id="spam-rate-threshold" class="panel-input" style="max-width: 80px;" placeholder="5" min="1" max="50">
+                    <span class="t-dim" style="font-size: 12px;">before action</span>
+                  </div>
+                </div>
+                <div class="setting-row">
+                  <span class="stat-label">Action on trigger</span>
+                  <select id="spam-action" class="panel-select">
+                    <option value="delete">Delete message</option>
+                    <option value="mute">Delete + Mute (60s)</option>
+                    <option value="kick">Delete + Kick</option>
+                  </select>
+                </div>
+                <button class="btn btn-primary" onclick="saveSecuritySettings()" style="margin-top: 10px; width: 100%;">Save Anti-Spam Config</button>
+              </div>
+            </div>
+            <!-- Row 5: Performance + Command Toggles -->
+            <div class="panel">
+              <h3 class="panel-title"><span data-icon="bolt" data-size="16"></span> Performance Stats</h3>
+              <div class="panel-content" id="performance-stats">
+                <div class="health-item">
+                  <span class="health-label">CPU Load</span>
+                  <span class="health-status" id="stat-cpu">Low</span>
+                </div>
+                <div class="health-item">
+                  <span class="health-label">Memory Usage</span>
+                  <span class="health-status" id="stat-memory">...</span>
+                </div>
+                <div class="health-item">
+                  <span class="health-label">API Latency</span>
+                  <span class="health-status" id="stat-latency">--ms</span>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <h3 class="panel-title"><span data-icon="robot" data-size="16"></span> Command Toggles</h3>
+              <div class="panel-content" id="command-toggles">
+                <p class="placeholder">Select a server to manage commands</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Servers Section -->
+    <section class="section" id="section-servers">
+      <div class="servers-grid" id="servers-grid">
+        <p class="placeholder">Loading servers...</p>
+      </div>
+    </section>
+  </main>
+
+  <div id="user-modal" class="modal-overlay hidden">
+    <div class="modal-content glass">
+      <button class="modal-close" onclick="closeUserModal()">&times;</button>
+      <div id="modal-user-header" class="modal-user-header"></div>
+      <div class="modal-stats-grid">
+        <div class="m-stat-card">
+          <span class="m-label">Messages</span>
+          <span id="m-stat-messages" class="m-value">0</span>
+        </div>
+        <div class="m-stat-card">
+          <span class="m-label">XP Level</span>
+          <span id="m-stat-level" class="m-value">1</span>
+        </div>
+        <div class="m-stat-card">
+          <span class="m-label">Warnings</span>
+          <span id="m-stat-warnings" class="m-value">0</span>
+        </div>
+        <div class="m-stat-card">
+          <span class="m-label">Joined</span>
+          <span id="m-stat-joined" class="m-value">-</span>
+        </div>
+      </div>
+      <div id="modal-roles" class="modal-roles-wrap"></div>
+      <div class="modal-actions"
+        style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+        <h4 style="margin-bottom: 10px;">Manage Roles</h4>
+        <div style="display: flex; gap: 10px;">
+          <input type="text" id="modal-add-role-id" class="panel-input" placeholder="Role ID to Add/Remove"
+            style="font-size: 12px;">
+          <button class="btn btn-primary" onclick="manageMemberRole('add')">Add</button>
+          <button class="btn btn-danger" onclick="manageMemberRole('remove')">Remove</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="lyrics-modal" class="modal-overlay hidden">
+    <div class="modal-content modal-lyrics glass">
+      <button class="modal-close" onclick="closeLyricsModal()">&times;</button>
+      <div class="modal-header" style="text-align: center; margin-bottom: 20px;">
+        <h3 id="lyrics-title">Song Title</h3>
+        <p id="lyrics-artist" class="t-dim">Artist Name</p>
+      </div>
+      <div id="lyrics-content" class="lyrics-body">
+        Loading lyrics...
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  <div class="save-bar" id="save-bar">
+    <div class="save-bar-info">
+      <span style="font-weight: 700; color: var(--text);">Careful!</span>
+      <span class="t-dim">— you have unsaved changes.</span>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <button class="btn btn-primary" style="width: auto; padding: 0 25px;" onclick="saveChanges()">Save
+        Changes</button>
+      <button class="btn btn-danger" style="width: auto; padding: 0 15px; border: none; background: none;"
+        onclick="discardChanges()">Reset</button>
+    </div>
+  </div>
+
+  <script src="app.js?v=1778197084" defer></script>
+</body>
+
+</html>

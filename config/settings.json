@@ -1,0 +1,37 @@
+{
+    "_version": 3,
+    "_note": "Configuration for EB-BOT. Colors, emoji IDs, profanity filter, multilingual support, and system defaults.",
+
+    "colors": {
+        "primary": "#00fbff",
+        "success": "#00FF00",
+        "warning": "#FFA500",
+        "error": "#FF0000",
+        "info": "#0099FF"
+    },
+
+    "emoji_ids": {
+    },
+
+    "locales": {
+        "default": "en",
+        "available": ["en", "ar", "de", "fr", "es", "tr"],
+        "rtl": ["ar"]
+    },
+
+    "profanity": [
+        "fuck", "shit", "bitch", "ass", "dick", "pussy",
+        "nigger", "faggot", "cunt", "whore", "slut",
+        "bastard", "retard", "wanker", "motherfucker"
+    ],
+
+    "defaults": {
+        "prefix": "!",
+        "locale": "en",
+        "welcome_message": "Welcome {user} to {server}!",
+        "ticket_category_name": "Tickets",
+        "ticket_transcript_channel_name": "transcripts",
+        "embed_color": "#00fbff",
+        "music_volume": 50
+    }
+}
